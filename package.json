@@ -1,0 +1,22 @@
+{
+  "name": "tiny-grep",
+  "version": "1.0.0",
+  "description": "basic grep implementation in typescript",
+  "main": "./lib/grep.js",
+  "scripts": {
+    "dev": "npm run tsc",
+    "tsc":"tsc"
+  },
+  "devDependencies": {
+    "@types/node": "^18.6.4"
+  },
+  "dependencies": {
+    "colors": "^1.4.0",
+    "typescript": "^4.7.4"
+  },
+  "author": {
+    "name":"tahir genç",
+    "email": "genct1818@gmail.com"
+  },
+  "license": "ISC"
+}
