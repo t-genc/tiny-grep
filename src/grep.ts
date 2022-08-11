@@ -12,18 +12,28 @@ example: node lib/grep -i "hello" main.js index.js
 Option flags:
 -h,  Print this help message
 -r,  Recursive search
--i,  İgnore case  
+-i,  İgnore case 
+-l,  Display just name of the files   
 `;
 const USAGE_MESSAGE=`
 Usage: node grep [OPTION]... PATTERNS [FILE]...
 Try 'node lib/grep -h' for more information.
 `
-type Flags = "-h" | "-r" | "-i";
+type Flags = 
+|"-h" 
+|"-r"
+|"-i"
+|"-l";
 
 interface Args {
   pattern: string;
   paths: string[];
   flags: Flags[];
+}
+
+interface Options{
+   case_sensitive:boolean;
+   omit_line:boolean
 }
 
 function printHelp()
@@ -56,15 +66,17 @@ function printLine(
   fpath: string,
   line: string,  
   pattern: string, 
-  case_sensitive: boolean
+  options:Options
 ) {
+  if(options.omit_line) return console.log(colors.cyan(fpath));
+
   let re = new RegExp(pattern, "gi");
 
-  if (case_sensitive && line.includes(pattern))
+  if (options.case_sensitive && line.includes(pattern))
   {
     line = line.replace(pattern, colors.red(pattern));
   } 
-  else if (!case_sensitive && line.match(re)?.length)
+  else if (!options.case_sensitive && line.match(re)?.length)
   {
     let matches = line.match(re);
     if (matches?.length) {
@@ -83,7 +95,7 @@ function printLine(
 function readFiles(
   paths: string[],
   pattern: string,
-  case_sensitive: boolean
+  options:Options
 ) {
   for (let fpath of paths)
   {
@@ -93,7 +105,7 @@ function readFiles(
 
     let lines = content.split(/\r?\n/);
 
-    lines.forEach((line) => printLine(fpath, line, pattern, case_sensitive));
+    lines.forEach((line) => printLine(fpath, line, pattern, options));
   }
 }
 
@@ -141,8 +153,11 @@ function getArgs(): Args | never
 function grep()
 {
   let {pattern, paths, flags}=getArgs();
-
-  let case_sensitive = true;
+  
+  let options:Options={
+    case_sensitive: true,
+    omit_line:false
+  }
 
   if (flags.includes("-h")) return printHelp();
   if(!paths.length) return printUsage(); 
@@ -156,14 +171,17 @@ function grep()
         paths = searchRecursive(paths);
         break
       case "-i":
-        case_sensitive = false;
+        options.case_sensitive = false;
         break
+      case "-l":
+        options.omit_line=true;
+        break           
       default:
         return console.log("%s: invalid option", f);
     }
   }
 
-  readFiles(paths, pattern, case_sensitive);
+  readFiles(paths, pattern,options);
 }
 
 grep();
