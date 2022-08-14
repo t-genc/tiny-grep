@@ -62,16 +62,23 @@ function isPathsExist(fpaths: string[]): boolean
   return allExist;
 }
 
+function isPatternExist(options:Options,fcontent:string,pattern:string){
+  
+  if((options.case_sensitive && fcontent.includes(pattern)) ||
+     (!options.case_sensitive && fcontent.toLowerCase().includes(pattern.toLowerCase()))) return true;
+  else return false;   
+
+}
+
 function printLine(
   fpath: string,
   line: string,  
   pattern: string, 
   options:Options
 ) {
-  if(options.omit_line) return console.log(colors.cyan(fpath));
-
+  
   let re = new RegExp(pattern, "gi");
-
+  
   if (options.case_sensitive && line.includes(pattern))
   {
     line = line.replace(pattern, colors.red(pattern));
@@ -86,7 +93,7 @@ function printLine(
     } else return;
 
   } else return;
-
+ 
   console.log(colors.cyan(fpath), colors.magenta(":"), line);
 
   return;
@@ -104,8 +111,11 @@ function readFiles(
     let content = fs.readFileSync(path.join(cwd(), fpath), "utf-8");
 
     let lines = content.split(/\r?\n/);
+    let isExist=isPatternExist(options,content,pattern)
 
-    lines.forEach((line) => printLine(fpath, line, pattern, options));
+    if(isExist && options.omit_line) console.log(colors.cyan(fpath))
+    else if(isExist) lines.forEach((line) => printLine(fpath, line, pattern, options));
+
   }
 }
 
