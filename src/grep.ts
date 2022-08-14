@@ -16,7 +16,7 @@ Option flags:
 -l,  Display just name of the files   
 `;
 const USAGE_MESSAGE=`
-Usage: node grep [OPTION]... PATTERNS [FILE]...
+Usage: node lib/grep [OPTION]... PATTERNS [FILE]...
 Try 'node lib/grep -h' for more information.
 `
 type Flags = 
